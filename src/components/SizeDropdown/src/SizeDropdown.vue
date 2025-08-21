@@ -1,0 +1,40 @@
+<template>
+  <ElDropdown :class="prefixCls" trigger="click" @command="setCurrentSize">
+    <Icon :size="18" icon="vi-mdi:format-size" :color="color" class="cursor-pointer" />
+    <template #dropdown>
+      <ElDropdownMenu>
+        <ElDropdownItem v-for="item in sizeMap" :key="item" :command="item">
+          {{ t(`size.${item}`) }}
+        </ElDropdownItem>
+      </ElDropdownMenu>
+    </template>
+  </ElDropdown>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue';
+import type { ComponentSize } from 'element-plus';
+import { ElDropdown, ElDropdownItem, ElDropdownMenu } from 'element-plus';
+import { useAppStore } from '@/store/modules/app';
+import { useI18n } from '@/hooks/web/useI18n';
+import { propTypes } from '@/utils/propTypes';
+import { useDesign } from '@/hooks/web/useDesign';
+
+defineProps({
+  color: propTypes.string.def(''),
+});
+
+const { getPrefixCls } = useDesign();
+
+const prefixCls = getPrefixCls('size-dropdown');
+
+const { t } = useI18n();
+
+const appStore = useAppStore();
+
+const sizeMap = computed(() => appStore.sizeMap);
+
+const setCurrentSize = (size: ComponentSize) => {
+  appStore.setCurrentSize(size);
+};
+</script>

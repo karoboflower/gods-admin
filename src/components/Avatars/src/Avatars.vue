@@ -1,0 +1,81 @@
+<template>
+  <div :class="prefixCls" class="flex items-center">
+    <template v-for="item in filterData" :key="item.url">
+      <template v-if="showTooltip && item.name">
+        <ElTooltip :content="item.name" placement="top">
+          <ElAvatar
+            :size="size"
+            :src="item.url"
+            class="relative"
+            :style="{
+              zIndex: filterData.indexOf(item),
+            }"
+          />
+        </ElTooltip>
+      </template>
+      <template v-else>
+        <ElAvatar
+          :size="size"
+          :src="item.url"
+          class="relative"
+          :style="{
+            zIndex: filterData.indexOf(item),
+          }"
+        />
+      </template>
+    </template>
+
+    <ElAvatar
+      v-if="data.length > max"
+      :style="{
+        zIndex: data.length,
+      }"
+    >
+      <span>+{{ data.length - max }}</span>
+    </ElAvatar>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { ComponentSize } from 'element-plus';
+import { ElAvatar, ElTooltip } from 'element-plus';
+import type { PropType } from 'vue';
+import { computed } from 'vue';
+import type { AvatarItem } from './types';
+import { useDesign } from '@/hooks/web/useDesign';
+
+const props = defineProps({
+  size: {
+    type: [String, Number] as PropType<ComponentSize | number>,
+    default: '',
+  },
+  max: {
+    type: Number,
+    default: 5,
+  },
+  data: {
+    type: Array as PropType<AvatarItem[]>,
+    default: () => [],
+  },
+  showTooltip: {
+    type: Boolean,
+    default: true,
+  },
+});
+
+const { getPrefixCls } = useDesign();
+
+const prefixCls = getPrefixCls('avatars');
+
+const filterData = computed(() => props.data.slice(0, props.max));
+</script>
+
+<style scoped lang="scss">
+$prefix-cls: '#{$adminNamespace}-avatars';
+
+.#{$prefix-cls} {
+  .#{$adminNamespace}-avatar + .#{$adminNamespace}-avatar {
+    margin-left: -15px;
+  }
+}
+</style>
